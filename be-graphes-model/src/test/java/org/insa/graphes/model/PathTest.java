@@ -123,7 +123,6 @@ public class PathTest {
         assertFalse(invalidPath.isValid());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGetLength() {
         assertEquals(0, emptyPath.getLength(), 1e-6);
