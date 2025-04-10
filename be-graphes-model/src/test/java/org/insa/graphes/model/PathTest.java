@@ -110,7 +110,6 @@ public class PathTest {
         assertEquals(10, longLoopPath.size());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testIsValid() {
         assertTrue(emptyPath.isValid());
@@ -133,7 +132,6 @@ public class PathTest {
         assertEquals(120, longLoopPath.getLength(), 1e-6);
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGetTravelTime() {
         // Note: 18 km/h = 5m/s
@@ -153,7 +151,6 @@ public class PathTest {
         assertEquals(15, longLoopPath.getTravelTime(28.8), 1e-6);
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGetMinimumTravelTime() {
         assertEquals(0, emptyPath.getMinimumTravelTime(), 1e-4);

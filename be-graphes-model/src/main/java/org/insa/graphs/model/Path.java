@@ -184,11 +184,28 @@ public class Path {
      * </ul>
      *
      * @return true if the path is valid, false otherwise.
-     * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+        if (this.isEmpty() || this.size() == 1) {
+            return true;
+        }
+
+        boolean isValide = true;
+        Node nodePrecedent;
+        Node nodeActuelle;
+        nodePrecedent = this.arcs.get(0).getOrigin();
+        isValide = (this.getOrigin() == nodePrecedent) ? true : false;
+
+        for (Arc arc : arcs) {
+            nodeActuelle = arc.getOrigin();
+
+            if (nodeActuelle != nodePrecedent) {
+                return false;
+            }
+
+            nodePrecedent = arc.getDestination();
+        }
+        return isValide;
     }
 
     /**
@@ -210,11 +227,15 @@ public class Path {
      * @param speed Speed to compute the travel time.
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-     * @deprecated Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+        double temps = 0;
+        for (Arc arc : arcs) {
+            double vitesse_max_route = arc.getRoadInformation().getMaximumSpeed();
+            double vitesse = (speed <= vitesse_max_route) ? speed : vitesse_max_route;
+            temps += arc.getTravelTime(vitesse);
+        }
+        return temps;
     }
 
     /**
@@ -222,11 +243,15 @@ public class Path {
      * every arc.
      *
      * @return Minimum travel time to travel this path (in seconds).
-     * @deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+        double time = 0;
+        for (Arc arc : arcs) {
+            time += arc.getTravelTime(arc.getRoadInformation().getMaximumSpeed());
+
+        }
+
+        return time;
     }
 
 }

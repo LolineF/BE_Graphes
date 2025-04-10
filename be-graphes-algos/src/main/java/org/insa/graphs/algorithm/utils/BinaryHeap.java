@@ -134,7 +134,9 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     @Override
     public void remove(E x) throws ElementNotFoundException {
-        // TODO:
+        // on echange de position l'indice de x et celui de current size (attention curren size peu etre different de la size du tas)
+        // on fais -1 à la current size
+        // puis on réorganise le tas 
     }
 
     @Override
