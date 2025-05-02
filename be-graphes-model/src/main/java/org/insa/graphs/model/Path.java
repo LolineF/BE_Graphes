@@ -2,6 +2,7 @@ package org.insa.graphs.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,8 +30,49 @@ public class Path {
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
+
+        if (nodes.size() == 1) {
+            return new Path(graph, nodes.get(0));
+        }
+
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+
+        if (nodes.isEmpty()) {
+            return new Path(graph, arcs);
+        }
+        List<Arc> arcs_de_node = new ArrayList<Arc>();
+        Arc arc_retenu;
+        Node node_debut;
+        Node node_destination = nodes.get(0);
+        double time;
+
+        for (int i = 1; i < nodes.size(); i++) {
+            arcs_de_node.clear();
+            node_debut = node_destination;
+            node_destination = nodes.get(i);
+
+            for (Arc arc : node_debut.getSuccessors()) {
+                if (arc.getDestination() == node_destination) {
+                    arcs_de_node.add(arc);
+                }
+            }
+
+            if (arcs_de_node.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "two consecutive nodes in the list are not connected in the graph");
+            }
+
+            time = Double.MAX_VALUE;
+            arc_retenu = arcs_de_node.get(0);
+            for (Arc arc : arcs_de_node) {
+                if (arc.getMinimumTravelTime() < time) {
+                    arc_retenu = arc;
+                    time = arc.getMinimumTravelTime();
+                }
+            }
+            arcs.add(arc_retenu);
+        }
+
         return new Path(graph, arcs);
     }
 
@@ -45,12 +87,50 @@ public class Path {
      *         consecutive nodes in the list are not connected in the graph.
      * @deprecated Need to be implemented.
      */
+
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
+
+        List<Arc> liste_arcs;
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+
+        if (nodes.size() == 1) {
+            return new Path(graph, nodes.get(0));
+        }
+
+
+        for (int i = 0; i < nodes.size() - 1; i++) {
+
+            Node node_depart = nodes.get(i);
+            Node node_dest = nodes.get(i + 1);
+            liste_arcs = node_depart.getSuccessors();
+            List<Arc> arcs_dest = new ArrayList<Arc>();
+
+            for (Arc arc : liste_arcs) {
+
+                if (arc.getDestination().equals(node_dest)) {
+                    arcs_dest.add(arc);
+                }
+            }
+
+            if (arcs_dest.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "No arc connects " + node_depart + " to " + node_dest);
+            }
+
+            Arc min = arcs_dest.get(0);
+            for (Arc arc2 : arcs_dest) {
+                if (arc2.getLength() < min.getLength()) {
+                    min = arc2;
+                }
+            }
+            arcs.add(min);
+        }
+
+
         return new Path(graph, arcs);
     }
+
 
     /**
      * Concatenate the given paths.
