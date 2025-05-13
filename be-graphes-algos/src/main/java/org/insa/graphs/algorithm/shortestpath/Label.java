@@ -29,8 +29,8 @@ public class Label implements Comparable<Label> {
         return this.marque;
     }
 
-    public void setMarque(){
-        this.marque = !(marque);
+    public void setMarque(boolean b){
+        this.marque = b;
     }
 
     public double getCoutRealise(){
@@ -51,6 +51,10 @@ public class Label implements Comparable<Label> {
 
     public double getCost(){
         return this.coutRealise;
+    }
+
+    public void setCost(double cout){
+        this.coutRealise= cout;
     }
 
     /**
