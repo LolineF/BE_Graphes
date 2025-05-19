@@ -20,92 +20,77 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     @Override
     protected ShortestPathSolution doRun() {
 
-        // retrieve data from the input problem (getInputData() is inherited from the
-        // parent class ShortestPathAlgorithm)
-        final ShortestPathData data = getInputData();
+        ShortestPathData data = getInputData();
         Graph graph = data.getGraph();
-
         final int nbNodes = graph.size();
 
-
-        // variable that will contain the solution of the shortest path problem
         ShortestPathSolution solution = null;
 
-        // TODO: implement the Dijkstra algorithm
         BinaryHeap<Label> tas = new BinaryHeap<>();
-        HashMap<Node,Label> lienNodeLabel = new HashMap<Node,Label>();
-
-        notifyOriginProcessed(data.getOrigin());
+        HashMap<Node, Label> lienNodeLabel = new HashMap<>();
 
         Node origin = data.getOrigin();
-        Node dest = data.getDestination();
-        Node node;
-        double newCout;
-        double oldCout;
-        Label label;
-        ArrayList<Arc> predecessorArcs = new ArrayList<>();
+        Node destination = data.getDestination();
 
-        label = new Label(origin);
-        lienNodeLabel.put(origin, label);
-        label.setCoutRealise(0);
-        label.setMarque(true);
+        // Initialisation de l'origine
+        Label originLabel = new Label(origin);
+        originLabel.setCoutRealise(0);
+        lienNodeLabel.put(origin, originLabel);
+        tas.insert(originLabel);
+        notifyOriginProcessed(origin);
 
-        tas.insert(label);
+        while (!tas.isEmpty()) {
 
-        lienNodeLabel.put(dest, new Label(dest));
+            Label currentLabel = tas.deleteMin();
+            Node currentNode = currentLabel.getSommetCourant();
+            currentLabel.setMarque(true);
+            notifyNodeMarked(currentNode);
 
-        while(! lienNodeLabel.get(dest).getMarque()){
-            for(Arc arc : origin.getSuccessors()){
+            // Si on a atteint la destination, on arrête
+            if (currentNode == destination) {
+                break;
+            }
 
-                node = arc.getDestination();
+            for (Arc arc : currentNode.getSuccessors()) {
+                Node neighbor = arc.getDestination();
+                double newCost = currentLabel.getCost() + data.getCost(arc);
+                Label neighborLabel = lienNodeLabel.get(neighbor);
 
-                // Si le noeud n'existait pas encore dans la HashMap
-                if(!lienNodeLabel.containsKey(node)){
-                    label = new Label(node);
-                    lienNodeLabel.put(node, label);
-                    tas.insert(label);
-                    notifyNodeReached(arc.getDestination());
+                if (neighborLabel == null) {
+                    neighborLabel = new Label(neighbor);
+                    lienNodeLabel.put(neighbor, neighborLabel);
+                    tas.insert(neighborLabel);
+                    notifyNodeReached(neighbor);
                 }
-                label = lienNodeLabel.get(node);
 
-                oldCout = label.getCost();
-                newCout = lienNodeLabel.get(origin).getCost() + data.getCost(arc);
-
-                if (newCout<oldCout){
-                    label.setCoutRealise(newCout);
-                    label.setPere(arc);
-                    tas.remove(label);
-                    tas.insert(label);
+                if (!neighborLabel.getMarque() && newCost < neighborLabel.getCost()) {
+                    // Mise à jour du coût et du père
+                    tas.remove(neighborLabel);
+                    neighborLabel.setCoutRealise(newCost);
+                    neighborLabel.setPere(arc);
+                    tas.insert(neighborLabel);
                 }
             }
-            origin = tas.findMin().getSommetCourant();
-            tas.findMin().setMarque(true);
-            predecessorArcs.add(tas.findMin().getPere());
-            tas.deleteMin();
-            
         }
 
-        notifyDestinationReached(data.getDestination());
-        
-        // Create the path from the array of predecessors...
-        ArrayList<Arc> arcs = new ArrayList<>();
-        Arc arc;
-        arc = lienNodeLabel.get(data.getDestination()).getPere();
-        arcs.add(arc);
-        while(arc.getOrigin() != data.getOrigin()) {
-            arc = lienNodeLabel.get(arc.getOrigin()).getPere();
-            arcs.add(arc);
+        Label destLabel = lienNodeLabel.get(destination);
+        if (destLabel == null || destLabel.getPere() == null) {
+            // Aucun chemin trouvé
+            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+        } else {
+            // Reconstruire le chemin
+            ArrayList<Arc> arcs = new ArrayList<>();
+            Arc arc = destLabel.getPere();
+            while (arc != null) {
+                arcs.add(arc);
+                arc = lienNodeLabel.get(arc.getOrigin()).getPere();
+            }
+            Collections.reverse(arcs);
+
+            notifyDestinationReached(destination);
+            solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
         }
 
-        // Reverse the path...
-        Collections.reverse(arcs);
-
-        // Create the final solution.
-        solution = new ShortestPathSolution(data, Status.OPTIMAL,
-                new Path(graph, arcs));
-
-        // when the algorithm terminates, return the solution that has been found
         return solution;
     }
-
 }
