@@ -53,6 +53,10 @@ public class Label implements Comparable<Label> {
         this.coutRealise = cout;
     }
 
+    public double getTotalCost(){
+        return this.getCost();
+    }
+
     @Override
     public int compareTo(Label l) {
         return Double.compare(this.getCost(), l.getCost());
