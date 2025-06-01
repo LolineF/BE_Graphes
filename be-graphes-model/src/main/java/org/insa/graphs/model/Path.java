@@ -126,8 +126,6 @@ public class Path {
             }
             arcs.add(min);
         }
-
-
         return new Path(graph, arcs);
     }
 
@@ -328,9 +326,7 @@ public class Path {
         double time = 0;
         for (Arc arc : arcs) {
             time += arc.getTravelTime(arc.getRoadInformation().getMaximumSpeed());
-
         }
-
         return time;
     }
 
