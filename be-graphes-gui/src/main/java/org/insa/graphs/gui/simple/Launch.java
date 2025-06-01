@@ -58,22 +58,18 @@ public class Launch {
                 new BufferedInputStream(new FileInputStream(mapName))))) {
 
             // TODO: read the graph
-            graph = null;
+            graph = reader.read();
         }
 
         // create the drawing
         final Drawing drawing = createDrawing();
 
         // TODO: draw the graph on the drawing
+        drawing.drawGraph(graph);
+        
+        // Test automatique
+        // on teste plusieurs scénarios { origine, destination, 0 si distance OU 1 si temps}
 
-        // TODO: create a path reader
-        try (final PathReader pathReader = null) {
-
-            // TODO: read the path
-            path = null;
-        }
-
-        // TODO: draw the path on the drawing
+        int[][] scenarios={};
     }
-
 }

@@ -57,8 +57,17 @@ public class Label implements Comparable<Label> {
         return this.getCost();
     }
 
-    @Override
-    public int compareTo(Label l) {
-        return Double.compare(this.getCost(), l.getCost());
+   @Override
+public int compareTo(Label l) {
+    int compare = Double.compare(this.getTotalCost(), l.getTotalCost());
+
+    // En cas d’égalité, départager avec le coût estimé si les deux sont des LabelStar // en vrai on s'en fiche un peu mais ca fait coquette
+    if (compare == 0 && this instanceof LabelStar && l instanceof LabelStar) {
+        double thisHeur = ((LabelStar) this).getEstimatedCost();
+        double otherHeur = ((LabelStar) l).getEstimatedCost();
+        return Double.compare(thisHeur, otherHeur);
     }
+
+    return compare;
+}
 }
