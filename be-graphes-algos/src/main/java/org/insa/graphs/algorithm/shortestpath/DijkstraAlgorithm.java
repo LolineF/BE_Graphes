@@ -52,6 +52,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             }
 
             for (Arc arc : currentNode.getSuccessors()) {
+                if (!data.isAllowed(arc)) continue;
+
                 Node neighbor = arc.getDestination();
                 double newCost = currentLabel.getCost() + data.getCost(arc);
                 Label neighborLabel = lienNodeLabel.get(neighbor);

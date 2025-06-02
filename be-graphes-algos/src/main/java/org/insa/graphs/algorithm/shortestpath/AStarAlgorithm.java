@@ -17,7 +17,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     public AStarAlgorithm(ShortestPathData data) {
         super(data);
     }
- @Override
+    @Override
     protected ShortestPathSolution doRun() {
 
         ShortestPathData data = getInputData();
