@@ -10,6 +10,7 @@ import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.Node;
 import org.insa.graphs.algorithm.AbstractSolution.Status;
+import org.insa.graphs.algorithm.AbstractInputData;
 
 public class AStarAlgorithm extends DijkstraAlgorithm {
 
@@ -32,7 +33,17 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         Node destination = data.getDestination();
 
         // Initialisation de l'origine
-        double heuristiqueOrigin = origin.getPoint().distanceTo(destination.getPoint());
+        
+        double heuristiqueOrigin;
+        if(data.getMode()==AbstractInputData.Mode.LENGTH){
+            heuristiqueOrigin = origin.getPoint().distanceTo(destination.getPoint());
+        }else{
+            // dans le cas ou on fait le plus rapide on utilise quand même distanceTo mais on divise par la vitesse max
+            double maxvitesse= Math.max(data.getMaximumSpeed(),1); // Math.max permet de proteger la division par 0;
+            heuristiqueOrigin= origin.getPoint().distanceTo(destination.getPoint())/(maxvitesse/3.6); // temps estimé
+        }
+        
+        
         LabelStar originLabel = new LabelStar(origin, heuristiqueOrigin);
         originLabel.setCoutRealise(0);
         lienNodeLabel.put(origin, originLabel);
@@ -58,7 +69,17 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
                 Label neighborLabel = lienNodeLabel.get(neighbor);
 
                 if (neighborLabel == null) {
-                    double heuristique = neighbor.getPoint().distanceTo(destination.getPoint());
+                    double heuristique;
+                    if(data.getMode()== AbstractInputData.Mode.LENGTH){
+                        heuristique = neighbor.getPoint().distanceTo(destination.getPoint());
+
+                    }else{
+                        double maxvitesse= Math.max(data.getMaximumSpeed(),1);
+                        heuristique=neighbor.getPoint().distanceTo(destination.getPoint()) /(maxvitesse/3.6);
+                    }
+
+
+
                     neighborLabel = new LabelStar(neighbor, heuristique);
                     lienNodeLabel.put(neighbor, neighborLabel);
                     tas.insert(neighborLabel);
